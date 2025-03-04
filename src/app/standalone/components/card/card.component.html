@@ -1,0 +1,16 @@
+<div class="card bg-grey rounded-lg md:rounded-[2rem] w-[176px] h-auto md:w-full md:h-full p-3 md:p-5 shadow app-card" (click)="onCardClick()">  <figure class="px-node rounded-xl w-32 h-32 md:w-[260px] md:h-[280px] m-auto">
+    <ng-container *ngIf="announcement?.files?.length > 0">
+      <img [src]="'http://localhost:9001/greenswap/' + announcement.files[0]" alt="Shoes" class="w-full h-full object-cover rounded-xl" />
+    </ng-container>
+  </figure>
+  <div class=" md:pb-10">
+    <div class="flex justify-between pt-1">
+      <h2 class="text-sm md:text-lg">{{ announcement.title }}</h2>
+      <mat-icon class="green-icon">favorite_border</mat-icon>
+    </div>
+    <div class="md:p-1 text-sm md:text-lg flex flex-wrap justify-between m-1 md:pt-5">
+      <p class="">{{ announcement.postalCode }}</p>
+      <span>{{ announcement.createdAt | customDatePipe: 'dd/MM/yyyy' }}</span>
+    </div>
+  </div>
+</div>

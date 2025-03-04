@@ -1,0 +1,120 @@
+<div class="container mx-auto max-w-3xl sm:px-4 sm:py-2  items-center max-w-[1230px]  ">
+  <form [formGroup]="uploadForm" (ngSubmit)="onSubmit()" class="flex flex-col sm:gap-6">
+    <!-- Section upload de photos -->
+    <div class="bg-card  sm:rounded-2xl sm:p-8 px-4 sm:shadow-md flex flex-col sm:gap-6 gap-3">
+      <h2 class="">Ajouter vos photos:</h2>
+
+      <!-- Zone d'upload et preview -->
+      <div class="flex gap-6 sm:gap-10 flex-wrap">
+        <!-- Bouton d'ajout (toujours à gauche) -->
+        <label class="block w-32 h-32 sm:w-48 sm:h-48 bg-[#9FCD9F] rounded-xl cursor-pointer flex flex-col items-center justify-center" for="photo-upload">
+          <span class="text-4xl text-custom-green-dark mb-2">+</span>
+          <span class="text-custom-green-dark text-center">Ajouter vos photos</span>
+          <input
+            type="file"
+            id="photo-upload"
+            class="hidden"
+            accept="image/*"
+            multiple
+            (change)="onFileSelected($event)"
+          >
+        </label>
+
+        <!-- Images sélectionnées (à droite) -->
+        <div *ngFor="let image of selectedImages; let i = index" class="relative w-32 h-32 sm:w-48 sm:h-48">
+          <img [src]="image.preview"
+               alt="Preview"
+               class="w-full h-full object-cover rounded-xl">
+          <button
+            type="button"
+            (click)="removeImage(i)"
+            class="absolute top-2 right-2 text-custom-green-darkw-6 h-6 flex items-center justify-center text-2xl font-bold">
+            ×
+          </button>
+        </div>
+      </div>
+
+      <!-- Champs titre et description -->
+      <div class="">
+        <label class="block font-medium mb-2">Titre:</label>
+        <input
+          type="text"
+          formControlName="title"
+          class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-green-light"
+        >
+        <div *ngIf="uploadForm.get('title')?.touched && uploadForm.get('title')?.invalid" class="text-red-500 text-sm mt-1">
+          <div *ngIf="uploadForm.get('title')?.errors?.['required']">Le titre est requis.</div>
+        </div>
+      </div>
+
+      <div class="">
+        <label class="block font-medium mb-2">Description:</label>
+        <textarea
+          formControlName="description"
+          class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-custom-green-light sm:min-h-[120px] resize-y"
+        ></textarea>
+        <div *ngIf="uploadForm.get('description')?.touched && uploadForm.get('description')?.invalid" class="text-red-500 text-sm mt-1">
+          <div *ngIf="uploadForm.get('description')?.errors?.['required']">La description est requise.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section critères -->
+    <div class="bg-card sm:rounded-2xl sm:p-8 sm:shadow-md flex flex-col gap-3 p-4">
+      <select
+        formControlName="category"
+        class=" px-4 py-2 border border-gray-200 rounded-lg  cursor-pointer w-52 select-custom"
+      >
+        <option value="" disabled>Catégorie</option>
+        <option value="meubles">Meubles</option>
+        <option value="decoration">Décoration</option>
+        <option value="luminaires">Luminaires</option>
+      </select>
+      <div>
+        <div *ngIf="isCategoryTouched" class="text-red-500 text-sm">
+          <div *ngIf="isCategoryRequired" >
+            La catégorie est requise
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-4 border-0 sm:border sm:border-gray-200 rounded-lg md:p-2 sm:p-6">
+        <span class="font-medium text-body-color">Critères</span>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <select formControlName="state" class="w-full sm:w-48 px-2 sm:px-4 py-2 pr-8 bg-select text-custom-green-dark rounded-lg select-custom">
+            <option value="" disabled selected>État</option>
+            <option *ngFor="let state of states" [value]="state.value">
+              {{ state.label }}
+            </option>
+          </select>
+
+          <select formControlName="color" class="w-full sm:w-48 px-2 sm:px-4 py-2 pr-8 bg-select text-custom-green-dark rounded-lg select-custom">
+            <option value="" disabled selected>Couleur</option>
+            <option *ngFor="let color of colors" [value]="color.value">
+              {{ color.label }}
+            </option>
+          </select>
+
+            <select formControlName="material"
+                    class="w-full sm:w-48 px-2 sm:px-4 py-2 pr-8 bg-select text-custom-green-dark rounded-lg select-custom">
+              <option value="" disabled selected>Matière</option>
+              <option *ngFor="let material of materials" [value]="material.value">
+                {{ material.label }}
+              </option>
+            </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="sm:mt-6 flex justify-center">
+      <app-button
+        routerLink="/user/form"
+        type="submit"
+        label="Ajouter"
+        class="w-full sm:w-48 px-4">
+      </app-button>
+    </div>
+  </form>
+</div>
+

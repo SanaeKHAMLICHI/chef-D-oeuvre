@@ -1,0 +1,121 @@
+<app-auth-layout class="md:bg-grey">
+  <div class="w-full max-w-md flex flex-col gap-4">
+    <div class="">
+      <h1 class="text-2xl md:p-6">Bienvenue sur GreenEcoSwap</h1>
+    </div>
+    <form class="md:p-6" [formGroup]="isCompany ? companyForm : userForm" (ngSubmit)="onSubmit()">
+      <div class="mb-2">
+        <div class="">
+          <label class="flex justify-end cursor-pointer">
+            <span class="text-sm text-right mr-5">Êtes-vous une entreprise ?</span>
+            <input type="checkbox" [checked]="isCompany" (change)="toggleInput()" name="isCompany" class="checkbox checkbox-success">
+          </label>
+        </div>
+      </div>
+      <div *ngIf="isCompany">
+        <div class="form-control text-right mb-4">
+          <input type="text" formControlName="siret" id="nSiret" placeholder="N° SIRET" class="w-full p-2 border border-gray-300 rounded-md h-12" (input)="onSiretInput()">
+        </div>
+        <div class="mb-2">
+          <input type="text" formControlName="companyName" name="companyName" placeholder="Nom de la société" required
+                 class="w-full p-2 border border-gray-300 rounded-md h-12" [disabled]="companyForm.controls.siret.invalid">
+        </div>
+      
+        <div class="form-control text-right mb-4">
+          <input type="text" formControlName="address" placeholder="Adresse" class="w-full p-2 border border-gray-300 rounded-md h-12" >
+        </div>
+        <div class="flex justify-between">
+              <div class="form-control text-right mb-4">
+                <input type="text" formControlName="city" placeholder="Ville" class="w-full p-2 border border-gray-300 rounded-md h-12" >
+              </div>
+              <div class="form-control text-right mb-4">
+                <input type="text" formControlName="postalCode" placeholder="Code postal" class="w-full p-2 border border-gray-300 rounded-md h-12" >
+              </div>
+
+        </div>
+        <div class="form-control text-right mb-4">
+          <input type="text" formControlName="description" placeholder="Description" class="w-full p-2 border border-gray-300 rounded-md h-12" >
+        </div>
+       <div class="mb-2">
+          <input type="text" formControlName="username" name="username" placeholder="Pseudo" required
+                 class="w-full p-2 border border-gray-300 rounded-md h-12">
+        </div>
+        <div class="mb-2">
+          <input type="email" formControlName="email" name="email" placeholder="Email" required
+                 class="w-full p-2 border border-gray-300 rounded-md h-12" >
+          <div *ngIf="companyForm.controls.email.touched && companyForm.controls.email.invalid" class="text-red-500">
+            {{ getEmailErrorMessage() }}
+          </div>
+        </div>
+        <div class="mb-2">
+          <input type="password" formControlName="password" name="password" placeholder="Mot de passe" required
+                 class="w-full p-2 border border-gray-300 rounded-md h-12" >
+          <div *ngIf="companyForm.controls.password.touched && companyForm.controls.password.invalid" class="text-red-500">
+            {{ getPasswordErrorMessage() }}
+          </div>
+        </div>
+        <div class="mb-2">
+          <input type="password" formControlName="confirmPassword" name="confirm-password" placeholder="Confirmer Mot de passe" required
+                 class="w-full p-2 border border-gray-300 rounded-md h-12" >
+        </div>
+        <!-- <div class="mb-4">
+          <label for="carteIdentite" class="block text-sm font-medium text-gray-700">Carte d'identité</label>
+          <input type="file" id="carteIdentite" (change)="onFileSelected($event)" class="file-input file-input-bordered file-input-sm w-full">
+        </div> -->
+        <div class="mb-4">
+          <label for="kbis" class="block text-sm font-medium text-gray-700">
+            Numéro Kbis
+          </label>
+          <input 
+            type="file" 
+            id="kbis" 
+            (change)="onFileSelected($event)"
+            accept=".pdf,.jpg,.jpeg,.png"
+            class="file-input file-input-sm file-input-bordered file-upload-button w-full" 
+          />
+          
+          <!-- Affichage du nom du fichier sélectionné -->
+         <!--  <span *ngIf="companyForm.get('kbis')?.value" class="text-sm text-gray-600">
+            Fichier sélectionné: {{ companyForm.get('kbis')?.value?.name }}
+            ({{ (companyForm.get('kbis')?.value?.size / 1024 / 1024).toFixed(2) }} MB)          </span> -->
+
+          <!-- Message d'erreur -->
+          <div *ngIf="companyForm.get('kbis')?.touched && companyForm.get('kbis')?.errors?.['required']" 
+               class="text-red-500 text-sm mt-1">
+            Le fichier Kbis est requis
+          </div>
+        </div>
+      </div>
+      
+      <div *ngIf="!isCompany">
+        <div class="mb-2">
+          <input type="text" formControlName="userName" name="userName" placeholder="Pseudo" required
+                 class="w-full p-2 border border-gray-300 rounded-md h-12">
+        </div>
+        <div class="mb-2">
+          <input type="email" formControlName="email" name="email" placeholder="Email" required
+                 class="w-full p-2 border border-gray-300 rounded-md h-12">
+          <div *ngIf="userForm.controls.email.touched && userForm.controls.email.invalid" class="text-red-500">
+            {{ getEmailErrorMessage() }}
+          </div>
+        </div>
+        <div class="mb-2">
+          <input type="password" formControlName="password" name="password" placeholder="Mot de passe" required
+                 class="w-full p-2 border border-gray-300 rounded-md h-12">
+          <div *ngIf="userForm.controls.password.touched && userForm.controls.password.invalid" class="text-red-500">
+            {{ getPasswordErrorMessage() }}
+          </div>
+        </div>
+        <div class="mb-2">
+          <input type="password" formControlName="confirmPassword" name="confirm-password" placeholder="Confirmer Mot de passe" required
+                 class="w-full p-2 border border-gray-300 rounded-md h-12">
+        </div>
+      </div>
+      <app-button type="submit" [label]="isCompany ? 'Demander une inscription' : 'S\'inscrire'" class="w-full"></app-button>
+      <div class="border-t border-gray-300 w-full my-4"></div>
+      <div class="text-center m-4">
+        <a routerLink="/" class="text-link">Revenir à la page de connexion</a>
+      </div>
+    </form>
+  </div>
+</app-auth-layout>

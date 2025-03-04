@@ -1,0 +1,71 @@
+  <div class=" flex flex-col gap-4">
+     <!-- Banniéres -->
+  <div class="flex flex-col-reverse md:flex-row justify-between items-center max-w-[1230px] m-auto md:pt-5 space-x-5">
+    <p class="md:text-[56px] light text-left px-4">
+      Donnez une seconde vie à vos biens, pour un monde plus
+      <span class="bg-green text-green italic	px-3  rounded-full m-auto">
+          durable
+      </span>
+    </p>
+    <img src="/assets/frame.svg" alt="Logo application" class="w-80 pr-8 md:w-auto m-5">
+  </div>
+  <div class="flex flex-col sm:flex-row flex-1 w-[1240px] m-auto px-3 gap-4 sm:gap-10">
+    <select class=" w-32  h-9 md:h-12 sm-40 bg-green px-2 sm:px-4 py-2 pr-8 bg-select text-custom-green-dark rounded-lg select-custom">
+      <option disabled selected>Catégorie</option>
+      <option>Catégorie 1</option>
+      <option>Catégorie 2</option>
+    </select>
+    
+    <div class="flex sm:flex-row md:justify-between w-full gap-10 sm:gap-0">
+      <div>
+        <input 
+          type="text" 
+          placeholder="Où ?" 
+          class="bg-green input w-32 sm:w-40 h-9 md:h-full" 
+        />
+      </div>
+      <div>
+        <app-button 
+          routerLink="/user/form"
+          type="submit" 
+          label="Déposer une annonce" 
+          customClass="sm:w-52 h-9 md:h-12">
+        </app-button>
+      </div>
+    </div>
+  </div>
+
+    <!-- parcourire les annonces -->
+  <div class="m-auto max-w-[1265px]">
+    <div class="flex flex-wrap m-auto max-w-[1280px] justify-start">
+      <div *ngFor="let announcement of announcements$()" class="p-2">
+        <app-card 
+          [announcement]="announcement"
+          class="cursor-pointer"
+          (click)="navigateToAnnouncement(announcement.id)"
+          >
+        </app-card>
+      </div>
+    </div>
+    
+    <div class="join flex justify-center p-10">
+      <ng-container *ngFor="let page of getPages(meta$().totalPages); let i = index">
+        <input
+          class="join-item btn btn-square"
+          type="radio"
+          name="options"
+          [attr.aria-label]="page"
+          (click)="onPageChange(page)"
+          [checked]="i === 0" />
+      </ng-container>
+    </div>
+    
+    
+  </div>
+
+  </div>
+ 
+
+
+
+

@@ -1,0 +1,34 @@
+<ng-container class="flex">
+  @if(announcement){
+      <div class=" flex flex-col w-[70%]  m-auto rounded-2xl py-5 gap-8">
+
+
+
+      <div class="carousel flex  justify-center w-[60%]">
+      <!--<div class="carousel carousel-center bg-neutral rounded-box max-w-md space-x-4 p-4 flex overflow-x-auto">
+        <div *ngFor="let img of item.image" class="carousel-item">
+          <img [src]="img" class="rounded-box w-full h-64 object-cover" alt="Carousel image" />
+        </div>
+      </div>-->
+      <div class="carousel carousel-center rounded-box  flex m-auto gap-5 ">
+        <div class="carousel-item" *ngFor="let img of  announcement.files">
+          <img [src]="img" alt="Carousel image" class="rounded-2xl h-60 object-cover" />
+        </div>
+      </div>
+    </div>
+      <div class="flex justify-between">
+        {{ announcement.title }}
+        <img ngSrc="/assets/favoris.svg" alt="profile icon" width="30" height="30"/>
+      </div>
+      <!-- <div>
+        {{ announcement.date }}
+      </div> -->
+      <div> Description </div>
+      <div>{{ announcement.description }}</div>
+
+    <app-criteria [announcement]="announcement"/>
+    <app-contact [announcement]="announcement"/>
+    </div>
+  }
+
+</ng-container>

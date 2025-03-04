@@ -1,0 +1,17 @@
+<div class="md:bg-grey">
+  <div class="flex items-center justify-between max-w-[1230px] m-auto p-10">
+  <figure class="mx-auto">
+    <img routerLink="/"  src="../../../assets/logo.svg" alt="Album" class=" h-10 md:h-12 ">
+  </figure>
+</div>
+<div class="card flex flex-col md:flex-row justify-between max-w-[1230px] m-auto md:space-x-5">
+  <figure class="bg-figure">
+    <img src="../../../assets/auth.svg" alt="Album" class="hidden md:block" />
+    <img src="../../../assets/auth-mobile.svg" alt="Album" class="block md:hidden" />
+  </figure>
+  <div class="flex-1 pr-3 md:p-8 flex flex-col justify-center">
+    <ng-content></ng-content>
+  </div>
+</div>
+</div>
+
