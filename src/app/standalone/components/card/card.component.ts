@@ -1,23 +1,17 @@
 import { Component, Input , Output, EventEmitter, inject} from '@angular/core';
-import { MatIcon } from "@angular/material/icon";
-import { NgOptimizedImage } from "@angular/common";
-import { RouterLink } from "@angular/router";
-import { AnnouncementDto } from "../../../routes/public/component/items/state/item.model";
 import { CustomDatePipe } from "../../pipe/custom-date.pipe";
 import { NgIf } from "@angular/common";
 import { Router } from "@angular/router";
+import {AnnouncementDto} from "../../../features/components/announcements/models/announcement.model";
 @Component({
-  selector: 'app-card',
-  standalone: true,
-  imports: [
-    MatIcon,
-    NgOptimizedImage,
-    RouterLink,
-    CustomDatePipe,
-    NgIf,
-  ],
-  templateUrl: './card.component.html',
-  styleUrls: ['./card.component.css']
+    selector: 'app-card',
+    standalone: true,
+    imports: [
+        CustomDatePipe,
+        NgIf,
+    ],
+    templateUrl: './card.component.html',
+    styleUrls: ['./card.component.css']
 })
 export class CardComponent {
   router = inject(Router);

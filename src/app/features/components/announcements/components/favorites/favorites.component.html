@@ -1,0 +1,39 @@
+<div class="container mx-auto px-4 md:py-6 md:w-4/5 w-full ">
+  <h1 class="border-y border-gray-400  py-3 md:py-0  text-center md:text-left md:border-0 md:text-2xl md:font-bold mb-6">Mes Favoris</h1>
+
+  @for (announcement of favorites; track announcement.id) {
+    <div class="flex-row card card-side bg-grey shadow-sm mb-4  z-0 px-2" (click)="goToAnnouncement(announcement.id)"
+    >
+      <figure class=" p-3 bg-card w-1/3">
+        <img
+        [src]="'http://localhost:9001/greenswap/' + (announcement.files ? announcement.files[0] : 'default.jpg')"          [alt]="announcement.title"
+        class="md:w-64 md:h-44 w-25 h-25 object-cover rounded-2xl" />
+      </figure>
+      <div class="card-body bg-card flex flex-col gap-2 w-2/3 md:w-full !p-4 md:p-6">
+        <div class="flex justify-between">
+            <p class="card-title  text-sm md:text-lg !mb-0">{{ announcement.title }}</p>
+            <img [src]=" 'assets/favoris-filled.svg'"
+            alt="favorite icon"
+            width="40" height="40"
+            class="absolute top-4 right-4 z-10 p-3 bg-white rounded-2xl shadow"
+            (click)="toggleFavorite(announcement.id)"
+            />
+        </div>
+        <div class="text-gray-500">{{ announcement.createdAt | customDatePipe: 'dd/MM/yyyy' }}</div>
+
+        <span class=" text-sm md:text-lg line-clamp-1 md:line-clamp-2">{{ announcement.description }}</span>
+
+        <div class=" flex flex-col md:flex-row justify-between">
+            <div class="flex gap-2 text-sm text-gray-500 md:mb-0 mb-2">
+                <span>{{ announcement.postalCode }}</span>
+              </div>
+        </div>
+      </div>
+    </div>
+  } @empty {
+    <div class="text-center py-8">
+      <p class="text-gray-500">Aucun favori pour le moment</p>
+    </div>
+  }
+</div>
+

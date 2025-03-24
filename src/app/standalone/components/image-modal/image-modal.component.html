@@ -1,0 +1,50 @@
+<!--<div class="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50">
+  <div class="bg-white p-6 rounded-md w-96">
+    <h2 class="text-xl font-semibold text-center mb-4">
+      {{ mode === 'add' ? 'Ajouter une photo' : 'Modifier la photo' }}
+    </h2>
+    <input  type="file" accept="image/*" (change)="onFileChange($event)" class="mb-4" />
+    <div class="flex justify-between">
+      <button (click)="closeModal()" class="px-4 py-2 bg-gray-500 text-white rounded-md">Annuler</button>
+      <button (click)="onSave()" class="px-4 py-2 bg-[#F89C13] text-white  rounded-md" [disabled]="!selectedFile">Sauvegarder</button>
+    </div>
+  </div>
+</div>-->
+<div class="fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 z-50">
+  <div class="bg-white p-6 rounded-md w-96 relative">
+    <!-- ❌ Crois de fermeture -->
+    <button (click)="closeModal()" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <h2 class="text-xl font-semibold text-center mb-4">
+      {{ mode === 'add' ? 'Ajouter une photo' : 'Modifier la photo' }}
+    </h2>
+
+    <!-- Input file -->
+    <input type="file" accept="image/*" (change)="onFileChange($event)" class="mb-4 w-full" />
+
+    <!-- Boutons d'action -->
+    <div class="flex flex-col gap-2">
+      <div class="flex justify-between">
+        <button (click)="closeModal()" class="px-4 py-2 bg-gray-500 text-white rounded-md">Annuler</button>
+        <button
+          (click)="onSave()"
+          class="px-4 py-2 bg-[#F89C13] text-white rounded-md"
+          [disabled]="!selectedFile"
+        >
+          Sauvegarder
+        </button>
+      </div>
+
+      <!-- ✅ Supprimer (si edit) -->
+      <button
+        *ngIf="mode === 'edit'"
+        (click)="onDeleteImage()"
+        class="text-red-500 text-sm underline mt-2 self-end"
+      >
+        Supprimer l’image de profil
+      </button>
+    </div>
+  </div>
+</div>

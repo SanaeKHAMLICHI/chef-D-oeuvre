@@ -1,10 +1,43 @@
-<div class="flex justify-between bg-card m-auto rounded-2xl px-8  py-4 gap-5">
-  <div class="flex gap-5">
+<div class="flex flex-col bg-card m-auto md:rounded-2xl p-3 md:p-8 gap-5  border-b border-gray-400 md:border-b-0 ">
+  <div class="flex gap-8">
     <img ngSrc="/assets/profile.svg" alt="profile icon" width="50" height="50"/>
-<!--     <p class="flex items-center">{{ announcement.author.name }}</p> -->
+    <div class="flex flex-col gap-0">
+      <div class="flex items-center  cursor-pointer gap-6"
+           (click)="goToUserProfile(announcement.user.userId)">
+        {{ announcement.user.userName }}
+        <mat-icon class="text-gray-500 text-xl">chevron_right</mat-icon>
+      </div>
+    <div class="flex items-center text-sm text-gray-500">{{ announcement.user.announcementCount}} annonces</div>
+    <div class="flex items-center gap-2">
+      <div class="flex items-center text-sm text-gray-500">
+        {{ announcement.user.averageRating }}
+      </div>
+      <div class="flex items-center">
+        <ng-container *ngFor="let star of [1,2,3,4,5]">
+          <mat-icon class=" average !m-0 !p-0 block text-[16px] !w-4 !h-4 text-[#F89C13]">
+            {{ announcement.user.averageRating >= star ? 'star' : announcement.user.averageRating >= star - 0.5 ? 'star_half' : 'star_border' }}
+          </mat-icon>
+        </ng-container>
+      </div>
 
-    <p class="flex items-center">user name</p> 
+    </div>
+    </div>
+
+
 </div>
+  <app-button type="submit" label="Message" class="w-full"
+              (click)="openMessageModal(announcement.user.userId)"></app-button>
 
-  <app-button type="submit" label="Message" customClass=" mt-4 mb-4 w-80"></app-button>
+  <div *ngIf="isModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+      <h2 class="text-lg font-semibold mb-4">Envoyer un message</h2>
+      <textarea [(ngModel)]="messageContent"
+                class="w-full p-2 border rounded-lg focus:border-blue-500"
+                placeholder="Écrivez votre message..."></textarea>
+      <div class="flex justify-end gap-4 mt-4">
+        <button class="px-4 py-2 bg-gray-300 rounded-lg" (click)="closeModal()">Annuler</button>
+        <button class="px-4 py-2 bg-blue-500 text-white rounded-lg" (click)="sendFirstMessage()">Envoyer</button>
+      </div>
+    </div>
+  </div>
 </div>

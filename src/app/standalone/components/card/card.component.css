@@ -1,7 +1,4 @@
-.card-body{
-  flex: none;
-  padding: 1.5em ;
-}
+
 
 .bg-green {
   border: 2px solid #9FCD9F;
@@ -14,7 +11,10 @@ header{
 .app-card:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   background-color: var(--bg-card-hover);
-} 
+}
+div p{
+  margin-bottom: 0 !important;
+}
 
 
 

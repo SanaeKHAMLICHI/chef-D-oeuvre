@@ -1,0 +1,103 @@
+<div class=" flex flex-col md:gap-10 gap-5">
+  <!-- Bannière -->
+  <div class="flex flex-col-reverse md:flex-row justify-between items-center w-full md:w-4/5 md:mx-auto md:pt-5 px-4 md:px-10">
+
+    <!-- Texte -->
+      @if(isEco()){
+        <p class="md:text-[60px] text-[18px] font-light leading-tight text-left w-full">
+          Offrez une nouvelle vie à vos matériaux, pour <br class="block md:hidden"> une <span class="italic">construction plus</span>
+          <span class="bg-green-200 text-green-900 italic px-2 md:px-3 rounded-full inline-block">
+    <span class="span-dr text-green italic px-3 rounded-full inline-block">
+      écologique
+    </span>
+  </span>
+        </p>
+
+      } @else {
+        <p class="md:text-[60px] text-[18px] font-light leading-tight text-left w-full">
+          Donnez une seconde vie à vos biens, pour <br class="block md:hidden"> un <span class="italic">monde plus</span>
+          <span class="bg-green-200 text-green-900 italic px-2 md:px-3  rounded-full inline-block">
+      <span class="span-dr text-green italic px-3 rounded-full inline-block">
+          durable
+      </span>
+    </span>
+        </p>
+      }
+
+
+    <!-- Image -->
+    <img src="/assets/frame.svg" alt="Illustration" class="w-80 md:w-auto md:max-w-[500px] m-5">
+
+  </div>
+
+
+  <div class="flex flex-col sm:flex-row flex-1 md:w-4/5 md:m-auto
+   gap-4 sm:gap-10">
+    @if (!isEco()) {
+      <select
+        (change)="onCategoryChange($event)"
+        class="w-40 h-9 md:h-12 sm-40 bg-green px-2  pr-8 bg-select text-custom-green-dark rounded-lg select-custom">
+        <option value="">Catégorie</option>
+        <option *ngFor="let category of categories$()" [value]="category.name">
+          {{ category.name }}
+        </option>
+      </select>
+    }
+
+
+    <div class="flex sm:flex-row justify-between w-full">
+      <div class="h-12">
+        <input
+          type="text"
+          placeholder="Où ?"
+          [value]="locationValue()"
+          (input)="onLocationInput($event)"
+          class="bg-green input w-28 h-9 md:h-full"
+        />
+      </div>
+      @if (!isEco()) {
+        <div>
+          <app-button
+            routerLink="/create"
+            type="submit"
+            label="Déposer une annonce"
+            class="">
+          </app-button>
+        </div>}
+    </div>
+  </div>
+
+  <!-- parcourire les annonces -->
+  <div class="m-auto md:w-4/5">
+    <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div *ngFor="let announcement of announcements$()">
+        <app-card
+          [announcement]="announcement"
+          class="cursor-pointer"
+          (click)="navigateToAnnouncement(announcement.id)"
+        ></app-card>
+      </div>
+    </div>
+
+
+    <div class="join flex justify-center p-10">
+      <ng-container *ngFor="let page of getPages(meta$().totalPages); let i = index">
+        <input
+          class="join-item btn btn-square"
+          type="radio"
+          name="options"
+          [attr.aria-label]="page"
+          (click)="onPageChange(page)"
+          [checked]="i === 0" />
+      </ng-container>
+    </div>
+
+
+  </div>
+
+</div>
+
+
+
+
+

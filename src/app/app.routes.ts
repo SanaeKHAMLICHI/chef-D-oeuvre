@@ -2,22 +2,28 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
-    path: '',
-    loadChildren: () =>
-      import('./routes/public/public.routes').then((r) => r.publicRoutes)
-  },
-  {
     path: 'auth',
     loadChildren: () =>
-      import('./routes/auth/auth.routes').then((r) => r.authRoutes)
+      import('./features/components/auth/routes/auth.routes').then((r) => r.authRoutes)
   },
   {
     path: 'user',
     loadChildren: () =>
-      import('./routes/authenticated/authenticated.routes').then((r) => r.authenticatedRoutes)
+      import('./features/components/user/routes/user.routes').then((r) => r.userRoutes)
+  },
+  {
+    path: 'chat',
+    loadChildren: () =>
+      import('./features/components/chat/routes/chat.routes').then((r) => r.chatRoutes)
+  },
+  {
+    path: '',
+    loadChildren: () =>
+      import('./features/components/announcements/routes/announcements.routes').then((r) => r.announcementsRoutes)
+
   },
   {
     path: '**',
-    redirectTo: '',
+    redirectTo: 'announcements',
   },
 ];

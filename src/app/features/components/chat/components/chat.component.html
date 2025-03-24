@@ -1,0 +1,82 @@
+<div class="flex h-[600px] md:h-[700px]  p-3 md:p-0 md:mx-auto  w-full md:w-4/5 rounded-xl md:gap-4">
+  <!-- Sidebar: Conversations List -->
+  <div class="w-full md:w-1/4 bg-card md:border-r overflow-y-auto md:rounded-xl"
+    [ngClass]="{'hidden': userId, 'md:flex': true}"  *ngIf="conversations().length > 0; else noConversations">
+
+    <ul class=" flex  flex-col gap-6 md:gap-0 w-full">
+        <div class="border-y border-gray-400  py-3 text-center md:hidden" >
+          <h2 class="text-lg font-medium">Messages</h2>
+        </div>
+      <li *ngFor="let conv of conversations()"
+          (click)="openChat(conv.userId)"
+          class="flex items-center md:p-4 cursor-pointer hover:bg-conv"
+          [ngClass]="{ 'bg-conv': conv.userId === userId }">
+        <div class="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center mr-4">
+          <img
+               [src]="'http://localhost:9001/greenswap/' + conv.image" onError="this.src='/assets/profile.svg'"
+               alt="{{ conv.username }}"
+               class="w-full h-full object-cover">
+        </div>
+
+        <div class="flex-1">
+          <div class="font-medium">{{ conv.username }}</div>
+          <div *ngIf="conv.lastMessageContent as message" class="text-gray-600 text-sm truncate w-full overflow-hidden whitespace-nowrap text-ellipsis">
+            {{ message.slice(0, 25) }}
+            <span *ngIf="message.length > 25">...</span>
+          </div>
+
+
+          <div class="text-color text-xs text-right">{{ conv.lastMessageDate }}</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Chat Window -->
+  <div class="w-full md:w-3/4 flex flex-col" *ngIf="userId">
+    <!-- Chat Header -->
+
+    <div class="md:p-4 bg-card  border-y border-gray-400 md:border-0  md:border-b flex items-center md:rounded-t-lg md:px-10 py-3">
+      <!-- Bouton pour revenir à la liste des conversations sur mobile -->
+      <button class="md:hidden mr-4" (click)="userId = null">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center mr-4">
+        <img
+          [src]="'http://localhost:9001/greenswap/' + selectedUserImage" onError="this.src='/assets/profile.svg'"
+          alt="{{selectedUserName}}"
+          class="w-full h-full object-cover">
+      </div>
+      <div class="ml-4 font-medium">{{ selectedUserName }}</div>
+    </div>
+
+    <!-- Chat Messages -->
+    <div class="flex-1 p-4 overflow-y-auto bg-card flex flex-col-reverse">
+      <div *ngFor="let msg of messages().slice().reverse()"
+           class="  max-w-80 md:max-w-lg p-3 rounded-lg mb-4 break-words whitespace-normal"
+           [ngClass]="{ 'bg-msg-issuer self-end text-right': msg.issuer === currentUser, 'bg-msg-recipient self-start text-left': msg.issuer !== currentUser }">
+        {{ msg.content }}
+      </div>
+    </div>
+
+    <!-- Chat Input -->
+    <div class="py-2 md:p-4 bg-card border-t flex items-center gap-4 rounded-b-lg">
+      <input
+        [(ngModel)]="message" placeholder="Tapez un message..."
+        (keydown.enter)="sendMessage(message)"
+        class="flex-1 p-3 h-12 bg-input-chat rounded-lg outline-none focus:border-blue-500"
+      />
+      <button mat-icon-button   (click)="sendMessage(message)" class="text-blue-500">
+        <img ngSrc="./assets/icons/send.svg" alt="send icon" width="15" height="15"/>
+
+      </button>
+    </div>
+  </div>
+
+  <ng-template #noConversations>
+    <div class="w-full flex justify-center items-center text-gray-500 text-lg p-6 text-center">
+      Aucune conversation disponible pour le moment.
+    </div>
+  </ng-template>
+</div>
+

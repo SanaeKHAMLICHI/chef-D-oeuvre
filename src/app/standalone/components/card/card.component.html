@@ -1,12 +1,22 @@
-<div class="card bg-grey rounded-lg md:rounded-[2rem] w-[176px] h-auto md:w-full md:h-full p-3 md:p-5 shadow app-card" (click)="onCardClick()">  <figure class="px-node rounded-xl w-32 h-32 md:w-[260px] md:h-[280px] m-auto">
-    <ng-container *ngIf="announcement?.files?.length > 0">
-      <img [src]="'http://localhost:9001/greenswap/' + announcement.files[0]" alt="Shoes" class="w-full h-full object-cover rounded-xl" />
+<div class="card bg-grey rounded-lg md:rounded-[2rem] w-full h-auto p-3 md:p-5 shadow app-card" (click)="onCardClick()">
+  <figure class="rounded-xl w-full h-32 md:h-[280px] m-auto mb-3 md:mb-0">
+    <ng-container *ngIf="announcement.files && announcement.files.length > 0; else defaultImage">
+      <img
+        [src]="'http://localhost:9001/greenswap/' + announcement.files[0]"
+        alt="{{announcement.title}}"
+        class="w-full h-full object-cover rounded-xl" />
     </ng-container>
+
+    <ng-template #defaultImage>
+      <img
+        src="/assets/default-img.png"
+        alt="Image par défaut"
+        class="w-full h-full object-cover rounded-xl" />
+    </ng-template>
   </figure>
-  <div class=" md:pb-10">
+  <div class="md:pb-10">
     <div class="flex justify-between pt-1">
-      <h2 class="text-sm md:text-lg">{{ announcement.title }}</h2>
-      <mat-icon class="green-icon">favorite_border</mat-icon>
+      <p class=" text-sm md:text-lg">{{ announcement.title }}</p>
     </div>
     <div class="md:p-1 text-sm md:text-lg flex flex-wrap justify-between m-1 md:pt-5">
       <p class="">{{ announcement.postalCode }}</p>

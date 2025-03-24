@@ -1,0 +1,148 @@
+<div class="container mx-auto px-4 md:py-6 md:w-4/5 w-full">
+  <!-- En-tête de profil -->
+  <div class="flex flex-col md:flex-row items-center justify-between mb-6 ">
+    <div class="flex gap-8 items-center  md:w-4/5 w-full">
+      <div class="flex justify-center md:justify-start relative">
+        <!-- Image de profil -->
+        <img
+          [src]="getProfileImage()"
+          alt="Photo de profil"
+          class="w-28 h-28 rounded-full border-1 object-cover"
+          />
+        <!-- ✅ Icône superposée (même position pour les deux cas) -->
+        <div *ngIf="isOwnProfile()"
+          class="absolute bottom-1 -right-1  bg-white w-7 h-7 rounded-full flex items-center justify-center shadow-md cursor-pointer "
+          (click)="openImageModal(connectedUser().image ? 'edit' : 'add')"
+        >
+          <mat-icon class="text-gray-600 text-lg pl-1">
+            {{ connectedUser().image ? 'edit' : 'add' }}
+          </mat-icon>
+        </div>
+      </div>
+
+      <div class="w-2/3 md:w-3/4 text-center md:text-left mt-4 md:mt-0">
+        <h1 class="flex gap-2 text-lg md:text-2xl font-semibold"> {{ isOwnProfile() ? connectedUser().username : otherUser()?.userName }}</h1>
+        <div class="flex items-center text-sm text-gray-500">    {{ isOwnProfile() ? connectedUser().announcementCount : otherUser()?.announcementCount }} annonces</div>
+        <div class="flex items-center gap-2">
+          <div class="flex items-center text-sm">
+            {{ averageRating }}
+          </div>
+          <div class="flex items-center">
+            <ng-container *ngFor="let star of [1,2,3,4,5]">
+              <mat-icon class=" average !m-0 !p-0 block text-[16px] !w-4 !h-4 text-[#F89C13]">
+                {{ averageRating >= star ? 'star' : averageRating >= star - 0.5 ? 'star_half' : 'star_border' }}
+              </mat-icon>
+            </ng-container>
+            <p *ngIf="!isOwnProfile()" (click)="showRatingModal = true" class="cursor-pointer underline text-sm">
+              Noter
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <button *ngIf="isOwnProfile()" (click)="openEditUsernameModal()" class="mt-2 flex self-start md:self-center md: h-8 px-4  py-1 bg-green-500 text-white rounded-md  bg-[#F89C13]">
+      <mat-icon class="text-white text-lg ">
+        edit
+      </mat-icon>Modifier Profil
+    </button>
+
+    <div *ngIf="isEditUsernameModalOpen" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+      <div class="bg-white p-6 rounded-md w-80 shadow-lg">
+        <h2 class="text-lg font-semibold mb-4">Modifier le nom d'utilisateur</h2>
+
+        <input type="text" [(ngModel)]="editedUsername"
+               class="w-full p-2 border rounded-md mb-4" />
+
+        <div class="flex justify-end gap-2">
+          <button class="px-4 py-2 bg-gray-400 text-white rounded-md" (click)="closeEditUsernameModal()">Annuler</button>
+          <button class="px-4 py-2 bg-[#F89C13] text-white rounded-md" (click)="saveUsername()">Sauvegarder</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <app-image-modal
+    *ngIf="isModalOpen"
+    [mode]="modalMode"
+    (close)="closeImageModal()"
+    (save)="onImageSave($event)"
+    (delete)="onDeleteImage()"
+  ></app-image-modal>
+
+
+
+  <!-- Section des annonces -->
+  <h2 class="border-t border-gray-400 py-3   md:text-left text-lg font-semibold mb-2"> Annonces</h2>
+  @for (announcement of userAnnouncements$(); track announcement.id) {
+    <div class="flex-row bg-grey  card card-side  shadow-sm mb-4  z-0"   [attr.routerLink]="!isOwnProfile() ? '/announcement/' + announcement.id : null"
+    >
+      <figure class=" p-3 bg-card w-1/3">
+        <img
+          [src]="'http://localhost:9001/greenswap/' + (announcement.files ? announcement.files[0] : '/src/assets/default-img.jpg')"  [alt]="announcement.title"
+          class="md:w-64 md:h-44 w-25 h-25 object-cover rounded-2xl" />
+      </figure>
+      <div class="card-body bg-card  w-2/3 md:w-full !p-4 md:p-6">
+        <span class=" card-title text-sm md:text-lg line-clamp-1 md:line-clamp-2">{{ announcement.title }}</span>
+
+        <span class="text-gray-500 text-sm md:text-lg">{{ announcement.createdAt | customDatePipe: 'dd/MM/yyyy' }}</span>
+
+        <span class=" text-sm md:text-lg line-clamp-1 md:line-clamp-2">{{ announcement.description }}</span>
+
+        <div class=" flex  md:flex-row justify-between w-full">
+          <div class="flex gap-2 text-sm text-gray-500 md:mb-0 mb-2">
+            <span>{{ announcement.postalCode }}</span>
+          </div>
+          <div *ngIf="isOwnProfile()" class="flex gap-2">
+            <mat-icon class="text-red-600" (click)="onDelete(announcement.id)">delete</mat-icon>
+            <a (click)="navigateToAnnouncementForm(announcement)"  class="flex items-center gap-2">
+              <mat-icon class="green-icon">edit</mat-icon>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  } @empty {
+    <div class="text-center py-8">
+      <p class="text-gray-500">Aucune Annonce pour le moment</p>
+    </div>
+  }
+</div>
+<div *ngIf="showRatingModal" class="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+
+    <div class="bg-white rounded-lg p-6 w-[300px] shadow-lg" (click)="$event.stopPropagation()">
+      <h2 class="text-lg font-semibold mb-4">Noter ce vendeur</h2>
+      @if(!isOwnProfile() && !hasAlreadyRated()){
+      <div class="flex justify-center gap-1 mb-4">
+        <ng-container *ngFor="let star of [1,2,3,4,5]">
+          <mat-icon
+            class="cursor-pointer text-xl"
+            [ngClass]="{ 'text-yellow-500': note >= star, 'text-gray-400': note < star }"
+            (click)="note = star"
+          >
+            star
+          </mat-icon>
+        </ng-container>
+      </div>
+
+      <div class="flex justify-between gap-2">
+        <button (click)="showRatingModal = false" class="text-sm text-gray-600 hover:underline">Annuler</button>
+        <button (click)="submitRating(note); showRatingModal = false" class="bg-[#F89C13] px-4 py-2 text-white rounded-md">
+          Valider
+        </button>
+      </div>
+      }@else{
+        <button (click)="showRatingModal = false" class="text-sm text-gray-600 hover:underline">x</button>
+
+        <!-- Si l'utilisateur a déjà noté -->
+        <div class="mt-4 text-sm text-green-600">
+          ✅ Vous avez déjà noté ce vendeur.
+        </div>
+      }
+    </div>
+
+
+</div>

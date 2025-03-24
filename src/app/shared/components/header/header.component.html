@@ -1,0 +1,243 @@
+<header
+  class=" md:h-[110px] rounded-[35px] m-auto flex flex-col md:flex-row justify-between  md:w-4/5 sm:p-2 [background-color:var(--bg-body-color)]  md:[background-color:var(--bg-header)]">
+  <!-- En-tête avec logo et bouton burger -->
+  <div class="fixed top-0 bg-menu  md:bg-transparent left-0 md:static text-black flex flex-col items-center md:max-w-[70%] mx-auto md:mt-3 z-50">
+    <!-- Navbar -->
+    <div class="flex justify-between items-center w-screen  md:w-full p-4">
+      <img ngSrc="./assets/logo.svg" alt="Logo application" class="w-[150px] h-[35px] md:w-[220px] md:h-[45px]"
+           width="220" height="45" (click)="router.navigate(['/'])">
+      <!-- Bouton hamburger visible uniquement sur mobile -->
+      <button class="md:hidden" (click)="toggleMenu()">
+        <mat-icon class="black-icon">menu</mat-icon>
+      </button>
+    </div>
+
+    <!-- Menu Mobile qui descend UNIQUEMENT si ouvert -->
+    <div
+      class="w-full bg-menu transition-all duration-300 ease-in-out px-3"
+      [ngClass]="{
+      'max-h-[500px] opacity-100 pointer-events-auto': isMenuOpen,
+      'max-h-0 opacity-0 pointer-events-none': !isMenuOpen}"
+    >
+      <div class="flex flex-col px-4  h-auto pb-5">
+          <!-- Bouton déposer une annonce -->
+          <div class="flex items-center gap-2 py-4 border-b">
+            <mat-icon>add</mat-icon>
+            <span class="text-lg">Déposer une annonce</span>
+          </div>
+
+          <!-- Messages -->
+          <div class="flex items-center gap-2 py-4 border-b">
+            <a href="/chat" class="flex items-center gap-2">
+              <mat-icon>chat</mat-icon>
+              <span class="text-lg">Messages</span>
+            </a>
+          </div>
+
+          <!-- Favoris -->
+          <div class="flex items-center gap-2 py-4 border-b">
+            <a href="/favorites" class="flex items-center gap-2">
+              <mat-icon>favorite_border</mat-icon>
+              <span class="text-lg">Favoris</span>
+            </a>
+          </div>
+
+          <!-- Se connecter -->
+          <div class="flex flex-col">
+            @if (!isAuthenticated()) {
+
+            <div class="mt-auto border-t py-4">
+              <a href="/auth/login" class="flex items-center gap-2">
+                <mat-icon>person_outline</mat-icon>
+                <span class="text-lg">Se connecter</span>
+              </a>
+            </div>
+            } @else {
+              <div class="mt-auto border-t py-4">
+                <a href="/user" class="flex items-center gap-2">
+                  <mat-icon>person_outline</mat-icon>
+                  <span class="text-lg">Mon profil</span>
+                </a>
+              </div>
+              <div class="mt-auto border-t py-4">
+                <a href="/auth/login" class="flex items-center gap-2">
+                  <mat-icon>logout</mat-icon>
+                  <span class="text-lg">Se déconnecter</span>
+                </a>
+              </div>
+
+            }
+
+            <div class="flex">
+              <label for="toggleThree" class="flex items-center cursor-pointer select-none ml-auto">
+                <div class="relative flex items-center">
+                  <input
+                    (click)="toggleTheme()"
+                    type="checkbox"
+                    id="toggleThree2"
+                    class="peer sr-only"
+                    [checked]="themeService.isDarkTheme()"
+                  />
+                  <div class="block h-8 rounded-full bg-mode w-14"></div>
+                  <div
+                    class="absolute flex items-center justify-center w-6 h-6 transition bg-[#FFD875] rounded-full dot  left-1 top-1 peer-checked:translate-x-full peer-checked:bg-[#5468CD]"
+                  >
+                      <span class="active text-white" [ngClass]="themeService.isDarkTheme() ? 'hidden' : ''">
+                        <img
+                          src="./assets/icons/sun-icon.svg"
+                          alt="Light mode"
+                          class="w-6 h-6"
+                        />
+                      </span>
+                    <span class="text-body-color inactive" [ngClass]="themeService.isDarkTheme() ? '' : 'hidden'">
+                        <img
+                          src="./assets/icons/moon-icon.svg"
+                          alt="Dark mode"
+                          class="w-4 h-4"
+                        />
+                      </span>
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+  </div>
+
+  <!-- Barre de recherche mobile -->
+  <div class="flex flex-col md:flex-row mt-4">
+    <div class="md:hidden mt-12 p-3">
+      <label class="input flex items-center gap-2 text-center w-full">
+        <input type="text" class="grow" placeholder="Rechercher"
+               [value]="searchValue()"
+               (input)="onInputChange($event)"
+               (keydown.enter)="onSearchSubmit()"
+        />
+        @if (searchValue()) {
+          <button (click)="resetAll()" class="absolute right-2">
+            <mat-icon class="!text-lg !h-5 !w-14">close</mat-icon>
+          </button>
+        } @else {
+          <img ngSrc="./assets/search.svg" alt="Search" width="24" height="24" class="py-3"/>
+        }
+      </label>
+    </div>
+  </div>
+
+  <!-- Menu desktop -->
+  <div class="hidden md:flex md:flex-row items-center w-1/2 gap-0">
+    <label class="input flex items-center  text-center w-2/3 m-5 relative">
+      <input type="text"
+             class="grow"
+             placeholder="Rechercher"
+             [value]="searchValue()"
+             (input)="onInputChange($event)"
+      (keydown.enter)="onSearchSubmit()"
+      />
+
+      <!-- Bouton de réinitialisation (croix) -->
+      @if (searchValue()) {
+        <button (click)="resetAll()" class="absolute right-2">
+          <mat-icon class="!text-lg p-1 ">close</mat-icon>
+        </button>
+      } @else {
+        <img ngSrc="./assets/search.svg" alt="Search" width="24" height="24" class="py-3 absolute right-2"/>
+      }
+    </label>
+    <app-button [label]="'Éco-Construction'" (click)="navigateToEco()" class="w-4/5"></app-button>
+
+  </div>
+
+  <div class="hidden md:flex md:items-center gap-8 text-center px-5">
+    <div class="text-center">
+      <a href="/favorites" >
+      <mat-icon class="green-icon">favorite_border</mat-icon>
+      </a>
+    </div>
+    <div class="text-center">
+      <a href="/chat" >
+      <mat-icon class="green-icon">mail_outline</mat-icon>
+      </a>
+    </div>
+    <div class="text-center relative">
+      @if (!isAuthenticated()) {
+        <a routerLink="/auth/login" class="flex">
+          <mat-icon class="green-icon">account_circle</mat-icon>
+        </a>
+      } @else {
+
+        <!-- Bouton pour ouvrir/fermer le menu -->
+
+          <button (click)="toggleProfileMenu()" class="flex  items-center cursor-pointer gap-4">
+
+            <ng-container *ngIf="user$().image ; else defaultImage" >
+              <img
+                [ngSrc]="'http://localhost:9001/greenswap/' +user$().image"
+                alt="{{user$().image}}"
+                class=" object-cover rounded-full" width="30" height="30"/>
+            </ng-container>
+            <ng-template #defaultImage>
+              <mat-icon class="green-icon">account_circle</mat-icon>
+            </ng-template>
+            <p class="text-sm">{{ user$()?.username }}</p>
+          </button>
+        <!-- Menu déroulant -->
+        @if (isProfileMenuOpen()) {
+          <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+            <!-- Option Profil -->
+            <a routerLink="/user"
+               class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+               (click)="isProfileMenuOpen.set(false)">
+              <mat-icon class="green-icon">person</mat-icon>
+              Mon profil
+            </a>
+
+            <!-- Option Déconnexion -->
+            <button (click)="onLogout()"
+                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2">
+              <mat-icon class="green-icon">logout</mat-icon>
+              Se déconnecter
+            </button>
+        </div>
+      }
+      }
+    </div>
+
+    <div>
+      <label for="toggleThree" class="flex items-center cursor-pointer select-none">
+        <div class="relative flex items-center">
+          <input
+            (click)="toggleTheme()"
+            type="checkbox"
+            id="toggleThree"
+            class="peer sr-only"
+            [checked]="themeService.isDarkTheme()"
+          />
+          <div
+            class="block h-8 rounded-full bg-mode w-14"
+          ></div>
+          <div
+            class="absolute flex items-center justify-center w-6 h-6 transition bg-[#FFD875] rounded-full dot  left-1 top-1 peer-checked:translate-x-full peer-checked:bg-[#5468CD]"
+          >
+          <span class="active text-white" [ngClass]="themeService.isDarkTheme() ? 'hidden' : ''">
+            <img
+              src="./assets/icons/sun-icon.svg"
+              alt="Light mode"
+              class="w-6 h-6"
+            />
+          </span>
+            <span class="text-body-color inactive" [ngClass]="themeService.isDarkTheme() ? '' : 'hidden'">
+            <img
+              src="./assets/icons/moon-icon.svg"
+              alt="Dark mode"
+              class="w-4 h-4"
+            />
+          </span>
+          </div>
+        </div>
+      </label>
+    </div>
+  </div>
+</header>

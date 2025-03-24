@@ -18,13 +18,18 @@
   --text-color: #000000;
   --bg-green :#9FCD9F;
   --bg-header: rgba(255, 255, 255, 0.58);
-  --bg-menu: rgba(244, 244, 244, 0.90);
+  --bg-menu: rgba(244, 244, 244, 0.70);
   --bg-select: #9FCD9F;
   --bg-input: #FFFFFF;
   --bg-card: #FFFFFF;
   --icon-black-color: #000000;
   --bg-card-hover: #f5f5f5;
   --bg-mode: #ffffff;
+  --bg-input-chat: #F8F8F8;
+  --bg-msg-issuer: #9FCD9F;
+  --bg-msg-recipient: #E3F1E3;
+  --bg-conv:#F8F8F8;
+
 
 }
 
@@ -40,10 +45,34 @@
   --bg-select: #9FCD9F;
   --bg-input: #111111;
   --bg-card: #252424;
-  --bg-menu:rgba(9, 9, 9, 0.90);
+  --bg-menu:rgba(9, 9, 9, 0.75);
   --bg-card-hover: #383838;
   --bg-mode: #080808;
+  --bg-input-chat: #5A5A5A;
+  --bg-msg-issuer: #2E5035;
+  --bg-msg-recipient: #5A5A5A;
+  --bg-conv:#5A5A5A;
 
+
+
+
+}
+.bg-conv{
+  background-color: var(--bg-conv);
+  color: var(--text-color);
+}
+.bg-msg-recipient{
+  background-color: var(--bg-msg-recipient);
+  color: var(--text-color);
+
+}
+.bg-msg-issuer{
+  background-color: var(--bg-msg-issuer);
+  color: var(--text-color);
+}
+
+.bg-input-chat {
+  background-color: var(--bg-input-chat);
 }
 body{
   background-color: var(--bg-body-color);
@@ -97,7 +126,7 @@ input, textarea{
   .bg-card {
     background-color: transparent;
   }
-  
+
   input, textarea{
     background-color: var(--bg-input);
   }

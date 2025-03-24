@@ -1,12 +1,12 @@
 import {Component, Input , Output, EventEmitter} from '@angular/core';
 import {NgClass} from "@angular/common";
-import { Router } from '@angular/router';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-button',
   standalone: true,
   imports: [
-    NgClass
+    NgClass,
   ],
   templateUrl: './button.component.html',
   styleUrl: './button.component.css'
@@ -21,24 +21,15 @@ export class ButtonComponent {
 
   constructor(private router: Router) {}
 
+
   onClick() {
-    
     if (this.routerLink) {
-      console.log('Tentative de navigation vers:', this.routerLink);
-      const fullPath = `/${this.routerLink}`;
-      console.log('Chemin complet:', fullPath);
-      
-      this.router.navigateByUrl(fullPath)
-        .then(() => {
-          console.log('Navigation réussie vers:', fullPath);
-          console.log('URL actuelle:', this.router.url);
-        })
+      console.log("routerLink", this.routerLink);
+      this.router.navigateByUrl(this.routerLink.startsWith('/') ? this.routerLink : '/' + this.routerLink)
         .catch(error => {
-          console.error('Erreur de navigation:', error);
-          console.error('État actuel du router:', this.router.url);
+          console.error('Navigation error:', error);
         });
     }
-    
     this.click.emit();
   }
 }
