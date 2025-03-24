@@ -18,6 +18,8 @@ export class ButtonComponent {
   @Input() customClass: string = '';
   @Output() click = new EventEmitter<void>();
   @Input() routerLink: string = '';
+  @Input() disabled: boolean = false;
+
 
   constructor(private router: Router) {}
 

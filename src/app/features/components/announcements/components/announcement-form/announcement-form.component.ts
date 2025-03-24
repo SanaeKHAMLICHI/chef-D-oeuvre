@@ -7,6 +7,8 @@ import {AnnouncementDto, CategoryDto, CreateOrUpdateAnnouncementDto} from "../..
 import {Router} from "@angular/router";
 import {AnnouncementStore} from "../../store/announcements.store";
 import {AnnouncementFacade} from "../../store/announcements.facade";
+import { NotificationService } from '../../../../../core/services/notification.service';
+import {ErrorHandlerService} from "../../../../../core/services/error-handler.services";
 
 interface ImagePreview {
   file: File | null;
@@ -27,7 +29,8 @@ interface ImagePreview {
   ],
   templateUrl: './announcement-form.component.html',
   styleUrl: './announcement-form.component.css'
-})export class AnnouncementFormComponent implements OnInit {
+})
+export class AnnouncementFormComponent implements OnInit {
   router = inject(Router);
   announcementStore = inject(AnnouncementStore);
   uploadForm: FormGroup;
@@ -39,12 +42,15 @@ interface ImagePreview {
   categories$: Signal<CategoryDto[]> = this.announcementStore.categories;
   announcementFacade = inject(AnnouncementFacade);
   announcement: AnnouncementDto | null = null;
+  private errorHandler = inject(ErrorHandlerService);
+  private notificationService = inject(NotificationService);
+  fileSizeErrorMessage: string = '';
 
 
   constructor(private fb: FormBuilder) {
     this.uploadForm = this.fb.group({
-      title: ['', Validators.required],
-      description: ['', Validators.required],
+      title: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
+      description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(1000)]],
       category: ['', Validators.required],
       state: ['', Validators.required],
       color: ['', Validators.required],
@@ -71,8 +77,6 @@ interface ImagePreview {
     }
   }
 
-
-
   onFileSelected(event: any): void {
     const files = event.target.files;
 
@@ -82,7 +86,10 @@ interface ImagePreview {
 
       filesToAdd.forEach((file: File) => {
         const reader = new FileReader();
-
+        if (file.size > 1048576) {
+          this.fileSizeErrorMessage = "Le fichier dépasse la taille maximale de 1 Mo."
+          return; // Ne pas l'ajouter
+        }
         reader.onload = (e: any) => {
           this.selectedImages.push({
             file: file,
@@ -97,62 +104,80 @@ interface ImagePreview {
     event.target.value = '';
   }
 
-
   removeImage(index: number): void {
     this.selectedImages.splice(index, 1);
   }
 
   onSubmit() {
-    console.log('Form submitted:', this.uploadForm.value);
-    const formValue = this.uploadForm.value;
-    const announcementData: CreateOrUpdateAnnouncementDto = {
-      title: formValue.title,
-      description: formValue.description,
-      categoryId: Number(formValue.category),
-      state: formValue.state,
-      color: formValue.color,
-      material: formValue.material,
-      postalCode: formValue.postalCode,
-      statut: "Active",
-    };
-
-
-    // ✅ Séparer les nouvelles images et les anciennes
-    const newFiles: File[] = this.selectedImages
-      .filter(image => image.file !== null)
-      .map(image => image.file as File); // Convertir `File | null` en `File`
-
-    const existingFiles: string[] = this.selectedImages
-      .filter(image => image.file === null)
-      .map(image => image.preview.replace('http://localhost:9001/greenswap/', '')); // Garder uniquement le chemin relatif
-
-    console.log('🟢 Nouveaux fichiers:', newFiles);
-    console.log('🟠 Fichiers existants:', existingFiles);
-
     if (this.uploadForm.valid) {
-      console.log("announcementData, ", announcementData)
-      console.log("test form valid")
-      if(this.announcement){
-        console.log("AnnouncementData", this.announcement);
-        this.announcementFacade.updateAnnouncement(this.announcement.id, announcementData, newFiles, existingFiles).subscribe(() => {
-          this.router.navigate(['/user']);
-        });
-      } else {
-        this.announcementFacade.createAnnouncement(announcementData , newFiles).subscribe(() => {
-          this.router.navigate(['/']);
-        });
-      }
+      const formValue = this.uploadForm.value;
+      const announcementData: CreateOrUpdateAnnouncementDto = {
+        title: formValue.title,
+        description: formValue.description,
+        categoryId: Number(formValue.category),
+        state: formValue.state,
+        color: formValue.color,
+        material: formValue.material,
+        postalCode: formValue.postalCode,
+        statut: "Active",
+      };
 
+      const newFiles: File[] = this.selectedImages
+        .filter(image => image.file !== null)
+        .map(image => image.file as File);
+
+      const existingFiles: string[] = this.selectedImages
+        .filter(image => image.file === null)
+        .map(image => image.preview.replace('http://localhost:9001/greenswap/', ''));
+
+      console.log('🟢 Nouveaux fichiers:', newFiles);
+      console.log('🟠 Fichiers existants:', existingFiles);
+
+      if (this.announcement) {
+        this.announcementFacade.updateAnnouncement(this.announcement.id, announcementData, newFiles, existingFiles)
+          .subscribe({
+            next: () => {
+              this.notificationService.success('Annonce mise à jour avec succès');
+              this.router.navigate(['/user']);
+            },
+            error: (error) => this.errorHandler.handleError(error)
+          });
+      } else {
+        this.announcementFacade.createAnnouncement(announcementData, newFiles)
+          .subscribe({
+            next: () => {
+              this.notificationService.success('Annonce créée avec succès');
+              this.router.navigate(['/']);
+            },
+            error: (error) => this.errorHandler.handleError(error)
+          });
+      }
     } else {
-      // Ajoutons des logs pour voir quels champs sont invalides
-      console.log('Form is invalid');
-      Object.keys(this.uploadForm.controls).forEach(key => {
-        const control = this.uploadForm.get(key);
-        if (control?.errors) {
-          console.log(`Field ${key} errors:`, control.errors);
-        }
-      });
+      this.markFormGroupTouched(this.uploadForm);
+      this.notificationService.error('Veuillez corriger les erreurs dans le formulaire');
     }
+  }
+
+  private markFormGroupTouched(formGroup: FormGroup) {
+    Object.values(formGroup.controls).forEach(control => {
+      control.markAsTouched();
+      if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
+      }
+    });
+  }
+
+  getErrorMessage(controlName: string): string {
+    const control = this.uploadForm.get(controlName);
+    if (control?.errors) {
+      return this.errorHandler.getErrorMessage(controlName, control.errors);
+    }
+    return '';
+  }
+
+  isFieldInvalid(controlName: string): boolean {
+    const control = this.uploadForm.get(controlName);
+    return control ? control.invalid && (control.dirty || control.touched) : false;
   }
 
   get categoryControl() {

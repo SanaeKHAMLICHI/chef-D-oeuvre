@@ -7,6 +7,7 @@ import {AuthFacade} from "../../store/auth.facade";
 import {CompanyRequestDto, RegisterRequest} from "../../models/auth.model";
 import {ButtonComponent} from "../../../../../standalone/components/button/button.component";
 import {AuthLayoutComponent} from "../../../../../standalone/components/auth-layout/auth-layout.component";
+import {debounceTime, distinctUntilChanged} from "rxjs";
 
 @Component({
     selector: 'app-register',
@@ -51,6 +52,12 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit() {
     this.disableCompanyFields();
+    this.companyForm.get('siret')?.valueChanges
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged()
+      )
+      .subscribe(() => this.onSiretInput());
   }
 
   disableCompanyFields() {
@@ -95,8 +102,14 @@ export class RegisterComponent implements OnInit {
             city: data.city,
           });
           this.companyForm.get('siret')?.disable();
+          console.log('[SIRET INPUT] API SUCCESS');
+
         },
-        error: () => this.disableCompanyFields()
+        error: () => {
+          this.disableCompanyFields()
+          console.error('[SIRET INPUT] API FAILED');
+
+        }
       });
     } else {
       this.disableCompanyFields();
