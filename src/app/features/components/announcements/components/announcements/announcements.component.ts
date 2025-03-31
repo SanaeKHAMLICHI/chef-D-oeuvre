@@ -16,13 +16,14 @@ import {
   OnInit,
   signal,
   Signal,
+  OnDestroy
 } from '@angular/core';
 import {AnnouncementFacade} from "../../store/announcements.facade";
 import {AnnouncementStore} from "../../store/announcements.store";
 import {CategoryDto, PaginationMetaDto} from "../../models/announcement.model";
 import {CardComponent} from "../../../../../standalone/components/card/card.component";
 import {ButtonComponent} from "../../../../../standalone/components/button/button.component";
-
+import {SeoService} from "../../../../../core/services/seo.service";
 @Component({
     selector: 'app-announcements',
     standalone: true,
@@ -40,10 +41,11 @@ import {ButtonComponent} from "../../../../../standalone/components/button/butto
     templateUrl: './announcements.component.html',
     styleUrl: './announcements.component.css'
 })
-export class AnnouncementsComponent implements OnInit {
-  private router = inject(Router);
+export class AnnouncementsComponent implements OnInit , OnDestroy {
+  router = inject(Router);
+  seoService = inject(SeoService);
   route= inject(ActivatedRoute);
-  private locationSubject = new Subject<string>();
+  locationSubject = new Subject<string>();
   announcementFacade = inject(AnnouncementFacade);
   announcementStore = inject(AnnouncementStore);
   announcements$ = computed(() =>
@@ -60,7 +62,7 @@ export class AnnouncementsComponent implements OnInit {
   ecoMeta$: Signal<PaginationMetaDto> = this.announcementStore.ecoPagination;
   ecoSearchFilter$: Signal<string> = this.announcementStore.searchFieldEco;
   categories$: Signal<CategoryDto[]> = this.announcementStore.categories;
-  private destroy$ = new Subject<void>();
+  destroy$ = new Subject<void>();
   isEco = signal(false);
   locationFilter$ = this.announcementStore.getLocationFilter;
   categoryFilter$ = this.announcementStore.getCategoryFilter;
@@ -146,6 +148,11 @@ export class AnnouncementsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.seoService.updateMetaTags({
+      title: 'Greenswap - Accueil',
+      description: 'Découvrez notre plateforme d\'échange et de vente d\'objets',
+      type: 'website'
+    });
     const currentRoute = this.route.snapshot.routeConfig?.path;
     this.isEco.set(currentRoute === 'eco-construction'); // ✅ signal.set()
 
@@ -213,6 +220,10 @@ export class AnnouncementsComponent implements OnInit {
   onLocationInput(event: Event) {
     const input = event.target as HTMLInputElement;
     this.locationSubject.next(input.value);
+  }
+
+  ngOnDestroy() {
+    this.seoService.resetMetaTags();
   }
 
 }

@@ -1,12 +1,12 @@
-import {Component} from '@angular/core';
-import {FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
-import {RouterLink} from "@angular/router";
-import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import {Component , inject} from '@angular/core';
+import {FormsModule, ReactiveFormsModule, Validators, FormBuilder} from "@angular/forms";
+import {RouterLink, Router} from "@angular/router";
 import {AuthFacade} from "../../store/auth.facade";
 import {LoginRequest} from "../../models/auth.model";
 import {AuthLayoutComponent} from "../../../../../standalone/components/auth-layout/auth-layout.component";
 import {ButtonComponent} from "../../../../../standalone/components/button/button.component";
+import {FormValidationService} from "../../../../../core/services/form-validation.service";
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -21,16 +21,14 @@ import {ButtonComponent} from "../../../../../standalone/components/button/butto
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
+  fb= inject(FormBuilder)
+  authFacade =inject(AuthFacade);
+  router = inject(Router);
+  formValidationService = inject(FormValidationService);
   loginForm = this.fb.group({
-    email: ['', [Validators.required, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]],
+    email: ['', [Validators.required,this.formValidationService.emailValidator()]],
     password: ['', Validators.required],
   });
-  constructor(
-    private fb: FormBuilder,
-    private authFacade: AuthFacade,
-    private router: Router
-  ){}
-
 
   onSubmit() {
     if(this.loginForm.valid) {
@@ -46,5 +44,4 @@ export class LoginComponent {
       console.log("message" , errorMessage)
     }
   }
-
 }

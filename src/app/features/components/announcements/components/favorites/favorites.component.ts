@@ -29,13 +29,11 @@ export class FavoritesComponent implements OnInit {
   toggleFavorite(announcementId: number) {
     this.announcementFacade.toggleFavoriteAnnouncement(announcementId , false).subscribe({
       next: () => {
-        console.log('Favori supprimé');
         this.announcementFacade.getFavorites().subscribe((favorites: AnnouncementDto[]) => {
             this.favorites = favorites;
          });
       },
       error: () => {
-        console.error('Erreur lors de la suppression du favori:');
       }
     });
 }

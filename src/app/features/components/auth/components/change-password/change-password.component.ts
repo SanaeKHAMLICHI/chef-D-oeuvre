@@ -1,7 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {FormBuilder, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Router, RouterLink} from "@angular/router";
-import { inject } from '@angular/core';
 import {AuthFacade} from "../../store/auth.facade";
 import {NewPasswordDto} from "../../models/auth.model";
 import {AuthLayoutComponent} from "../../../../../standalone/components/auth-layout/auth-layout.component";
@@ -20,9 +19,9 @@ import {ButtonComponent} from "../../../../../standalone/components/button/butto
   styleUrl: './change-password.component.css'
 })
 export class ChangePasswordComponent {
-  private router = inject(Router);
-  private formBuilder = inject(FormBuilder);
-  private authFacade = inject(AuthFacade);
+   router = inject(Router);
+   formBuilder = inject(FormBuilder);
+   authFacade = inject(AuthFacade);
   resetKey = history.state?.resetKey;
 
   form = this.formBuilder.group({
@@ -46,7 +45,7 @@ export class ChangePasswordComponent {
         newPassword: this.form.controls.password.value ?? '',
         resetKey: this.resetKey ?? 0
       };
-      this.authFacade.finishPasswordReset(payload as NewPasswordDto).subscribe(() => {
+      this.authFacade.finishPasswordReset(payload).subscribe(() => {
         this.router.navigate(['/auth/login']);
       });
     }

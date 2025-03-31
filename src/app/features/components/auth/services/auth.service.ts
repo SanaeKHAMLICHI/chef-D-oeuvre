@@ -18,7 +18,10 @@ export class AuthService {
 
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/users/authentication`, credentials)
+    return this.http.post<LoginResponse>(
+      `${this.apiUrl}/users/authentication`
+      , credentials
+    )
   }
 
   register(credentials: RegisterRequest): Observable<User> {

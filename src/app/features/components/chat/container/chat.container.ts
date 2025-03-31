@@ -14,4 +14,4 @@ import {HeaderComponent} from "../../../../shared/components/header/header.compo
   `,
   styles: []
 })
-export class ChatContainer {}
+export class ChatContainer {} 

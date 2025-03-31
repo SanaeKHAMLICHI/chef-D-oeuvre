@@ -10,6 +10,7 @@ describe("Formulaire d'annonce", () => {
   });
 
   beforeEach(() => {
+    cy.viewport(1920, 1080);       // résolution personnalisée
     cy.login(testUser.email, testUser.password);
     cy.visit('/create');
   });
@@ -65,7 +66,11 @@ describe("Formulaire d'annonce", () => {
   });
 
   it('sélectionne une catégorie valide', () => {
+    cy.get('select[formControlName="category"]')
+      .should('contain.text', 'Catégorie'); // attend que l'option "Sports" existe
+
     cy.get('select[formControlName="category"]').select('Sports');
+
     cy.get('select[formControlName="category"]').should('not.have.class', 'border-red-500');
   });
 
@@ -92,7 +97,7 @@ describe("Formulaire d'annonce", () => {
   it('soumet le formulaire avec succès', () => {
     cy.get('input[formControlName="title"]').type('Titre de test');
     cy.get('textarea[formControlName="description"]').type('Description détaillée du test');
-    cy.get('select[formControlName="category"]').select('Sports');
+    cy.get('select[formControlName="category"]').select('3'); // par ex. l’ID de "Sports"
     cy.get('select[formControlName="state"]').select('Neuf');
     cy.get('select[formControlName="color"]').select('Blanc');
     cy.get('select[formControlName="material"]').select('Bois');
@@ -118,4 +123,36 @@ describe("Formulaire d'annonce", () => {
       cy.get(`[formControlName="${field}"]`).focus().blur().should('have.class', 'border-red-500');
     });
   });
+
+  it('bloque une tentative d’injection XSS dans la description', () => {
+    cy.viewport(1280, 800); // 👈 important
+    const maliciousInput = '<script>alert("XSS")</script>';
+
+    cy.get('textarea[formControlName="description"]')
+      .clear()
+      .type(maliciousInput)
+      .blur();
+
+    cy.get('app-button[type="submit"]').click();
+
+    cy.contains('Les balises HTML ou scripts sont interdits').should('be.visible');
+
+    cy.wait(300);
+    cy.screenshot('formulaire-erreur-xss');
+  });
+
+  it('bloque une tentative d’injection XSS dans la description', () => {
+    const maliciousInput = '<script>alert("XSS")</script>';
+
+    cy.get('textarea[formControlName="description"]')
+      .type(maliciousInput)
+      .blur();
+
+    cy.get('app-button[type="submit"]').click();
+
+    cy.get('div.text-red-500')
+      .should('contain.text', 'Les balises HTML ou scripts sont interdits');
+  });
+
+
 });

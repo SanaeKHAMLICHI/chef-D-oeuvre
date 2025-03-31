@@ -19,8 +19,8 @@ import {ButtonComponent} from "../../../../../standalone/components/button/butto
     styleUrl: './verification-code.component.css'
 })
 export class VerificationCodeComponent {
-  private fb = inject(FormBuilder);
-  private router = inject(Router);
+  fb = inject(FormBuilder);
+  router = inject(Router);
   authFacade = inject(AuthFacade);
   resetKey: number;
 
@@ -42,7 +42,6 @@ export class VerificationCodeComponent {
     if (this.form.valid || this.form.get('resetKey')?.value?.length === 6) {
       const key = this.form.get('resetKey')?.value;
       this.authFacade.verifyPasswordReset(parseInt(key!, 10)).subscribe(() => {
-        console.log('resetKey:', parseInt(key!, 10));
           this.router.navigate(['/auth/change-password'], {
             state: { resetKey: parseInt(key!, 10) ?? 0 }
           });

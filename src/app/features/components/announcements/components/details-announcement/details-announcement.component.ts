@@ -1,4 +1,4 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, inject, OnInit, OnDestroy} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {NgForOf, NgOptimizedImage} from "@angular/common";
 import {FormsModule} from "@angular/forms";
@@ -8,6 +8,7 @@ import {AnnouncementDto} from "../../models/announcement.model";
 import {ContactComponent} from "../../../../../standalone/components/contact/contact.component";
 import {CustomDatePipe} from "../../../../../standalone/pipe/custom-date.pipe";
 import {CriteriaComponent} from "../../../../../standalone/components/criteria/criteria.component";
+import {SeoService} from "../../../../../core/services/seo.service";
 
 @Component({
   selector: 'app-details-item',
@@ -23,8 +24,9 @@ import {CriteriaComponent} from "../../../../../standalone/components/criteria/c
     templateUrl: './details-announcement.component.html',
     styleUrls: ['./details-announcement.component.css']
 })
-export class DetailsAnnouncementComponent implements OnInit {
+export class DetailsAnnouncementComponent implements OnInit, OnDestroy {
   itemsStore = inject(AnnouncementStore);
+  seoService = inject(SeoService);
   route = inject(ActivatedRoute);
   announcementFacade = inject(AnnouncementFacade);
   router= inject(Router) ;
@@ -40,6 +42,7 @@ export class DetailsAnnouncementComponent implements OnInit {
   }
 
   ngOnInit() {
+    
     const currentUrl = window.location.pathname;
     this.isEcoPage = currentUrl.startsWith('/eco-announcement');
     console.log("ecopage ", this.isEcoPage)
@@ -52,8 +55,20 @@ export class DetailsAnnouncementComponent implements OnInit {
         : this.itemsStore.getAnnouncement().find((announcement) =>
         announcement.id === this.announcementId);
     }
+    if (this.announcement) {
+      this.seoService.updateMetaTags({
+        title: `${this.announcement.title} - Greenswap`,
+        description: this.announcement.description,
+        type: 'product'
+      });
+    }
 
   }
+
+  ngOnDestroy() {
+    this.seoService.resetMetaTags();
+  }
+
   checkFavoriteStatus() {
     this.announcementFacade.checkFavoriteStatus(this.announcementId).subscribe({
       next: (status) => {

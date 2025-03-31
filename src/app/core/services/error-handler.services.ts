@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { NotificationService } from './notification.service';
@@ -7,10 +7,8 @@ import { NotificationService } from './notification.service';
   providedIn: 'root'
 })
 export class ErrorHandlerService {
-  constructor(
-    private router: Router,
-    private notificationService: NotificationService
-  ) {}
+  router= inject(Router)
+  notificationService= inject(NotificationService)
 
   handleError(error: HttpErrorResponse): void {
     let errorMessage: string;
@@ -46,25 +44,58 @@ export class ErrorHandlerService {
     console.error('Erreur:', error);
   }
 
-  getErrorMessage(controlName: string, errors: any): string {
+  getErrorMessage(errors: any): string {
     if (!errors) return '';
 
-    if (errors.required) return 'Ce champ est requis';
+    const staticMessages: Record<string, string> = {
+      required: 'Ce champ est requis',
+      passwordMismatch: 'Les mots de passe ne correspondent pas',
+      invalidFileType: 'Type de fichier non autorisé',
+      fileTooLarge: 'Fichier trop volumineux',
+      emailExists: 'Cet email est déjà utilisé',
+      usernameExists: 'Ce nom d\'utilisateur est déjà utilisé',
+      pattern: 'Format invalide',
+      email: 'Email invalide'
+    };
 
-    if (controlName === 'postalCode') {
-      if (errors.pattern) return 'Le code postal doit contenir uniquement des chiffres';
-      if (errors.minlength || errors.maxlength) return 'Le code postal doit contenir exactement 5 chiffres';
+    for (const key in staticMessages) {
+      if (errors[key]) return staticMessages[key];
     }
 
-    // Autres champs génériques
-    if (errors.pattern) return 'Format invalide';
-    if (errors.minlength) return `Minimum ${errors.minlength.requiredLength} caractères`;
-    if (errors.maxlength) return `Maximum ${errors.maxlength.requiredLength} caractères`;
-    if (errors.email) return 'Email invalide';
-    if (errors.min) return `La valeur minimale est ${errors.min.min}`;
-    if (errors.max) return `La valeur maximale est ${errors.max.max}`;
+    const dynamicMessageKeys = [
+      'invalidSiret',
+      'invalidEmail',
+      'invalidUsername',
+      'invalidPassword',
+      'invalidPostalCode',
+      'scriptDetected',
+      'sqlInjectionDetected'
+    ];
+
+    for (const key of dynamicMessageKeys) {
+      const message = errors[key]?.message;
+      if (message) return message;
+    }
+
+    if (errors.minlength?.requiredLength) {
+      return `Minimum ${errors.minlength.requiredLength} caractères`;
+    }
+
+    if (errors.maxlength?.requiredLength) {
+      return `Maximum ${errors.maxlength.requiredLength} caractères`;
+    }
+
+    if (errors.min?.min) {
+      return `Valeur minimale : ${errors.min.min}`;
+    }
+
+    if (errors.max?.max) {
+      return `Valeur maximale : ${errors.max.max}`;
+    }
 
     return 'Erreur de validation';
   }
+
+
 
 }

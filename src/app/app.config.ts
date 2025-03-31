@@ -1,4 +1,4 @@
-import { ApplicationConfig } from '@angular/core';
+import { ApplicationConfig, LOCALE_ID } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import {
   HTTP_INTERCEPTORS,
@@ -8,11 +8,10 @@ import {
 
 import { routes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { DatePipe } from '@angular/common';
-import { registerLocaleData } from '@angular/common';
+import { DatePipe, registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
-import { LOCALE_ID } from '@angular/core';
 import { TokenInterceptor } from './core/services/token-interceptor.service';
+import {ErrorInterceptor} from "./core/services/error-interceptor";
 registerLocaleData(localeFr);
 
 export const appConfig: ApplicationConfig = {
@@ -23,6 +22,11 @@ export const appConfig: ApplicationConfig = {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
       multi: true,
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ErrorInterceptor,
+      multi: true
     },
     provideAnimationsAsync(),
     DatePipe,

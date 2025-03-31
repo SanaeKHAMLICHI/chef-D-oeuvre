@@ -14,7 +14,12 @@
       </div>
       <div *ngIf="isCompany">
         <div class="form-control text-right mb-4">
-          <input type="text" formControlName="siret" id="nSiret" placeholder="N° SIRET" class="w-full p-2 border border-gray-300 rounded-md h-12">
+          <input
+                 inputmode="numeric"
+                 maxlength="14" formControlName="siret" id="nSiret" placeholder="N° SIRET" class="w-full p-2 border border-gray-300 rounded-md h-12">
+          <div *ngIf="companyForm.get('siret')?.touched && companyForm.get('siret')?.invalid" class="text-red-500">
+            {{ getSiretErrorMessage() }}
+          </div>
         </div>
         <div class="mb-2">
           <input type="text" formControlName="companyName" name="companyName" placeholder="Nom de la société" required
@@ -39,29 +44,28 @@
        <div class="mb-2">
           <input type="text" formControlName="username" name="username" placeholder="Pseudo" required
                  class="w-full p-2 border border-gray-300 rounded-md h-12">
+          <div *ngIf="companyForm.get('username')?.touched && companyForm.controls.username.invalid" class="text-red-500">
+            {{ getUsernameErrorMessage(companyForm) }}
+          </div>
         </div>
         <div class="mb-2">
           <input type="email" formControlName="email" name="email" placeholder="Email" required
                  class="w-full p-2 border border-gray-300 rounded-md h-12" >
-          <div *ngIf="companyForm.controls.email.touched && companyForm.controls.email.invalid" class="text-red-500">
-            {{ getEmailErrorMessage() }}
+          <div *ngIf="companyForm.get('email')?.touched &&companyForm.get('email')?.errors?.['invalidEmail']" class="text-red-500">
+            {{ getEmailErrorMessage(companyForm) }}
           </div>
         </div>
         <div class="mb-2">
           <input type="password" formControlName="password" name="password" placeholder="Mot de passe" required
                  class="w-full p-2 border border-gray-300 rounded-md h-12" >
-          <div *ngIf="companyForm.controls.password.touched && companyForm.controls.password.invalid" class="text-red-500">
-            {{ getPasswordErrorMessage() }}
+          <div *ngIf="companyForm.get('password')?.touched && companyForm.controls.password.invalid" class="text-red-500">
+            {{ getPasswordErrorMessage(companyForm)}}
           </div>
         </div>
         <div class="mb-2">
           <input type="password" formControlName="confirmPassword" name="confirm-password" placeholder="Confirmer Mot de passe" required
                  class="w-full p-2 border border-gray-300 rounded-md h-12" >
         </div>
-        <!-- <div class="mb-4">
-          <label for="carteIdentite" class="block text-sm font-medium text-gray-700">Carte d'identité</label>
-          <input type="file" id="carteIdentite" (change)="onFileSelected($event)" class="file-input file-input-bordered file-input-sm w-full">
-        </div> -->
         <div class="mb-4">
           <label for="kbis" class="block text-sm font-medium text-gray-700">
             Numéro Kbis
@@ -74,12 +78,6 @@
             class="file-input file-input-sm file-input-bordered file-upload-button w-full"
           />
 
-          <!-- Affichage du nom du fichier sélectionné -->
-         <!--  <span *ngIf="companyForm.get('kbis')?.value" class="text-sm text-gray-600">
-            Fichier sélectionné: {{ companyForm.get('kbis')?.value?.name }}
-            ({{ (companyForm.get('kbis')?.value?.size / 1024 / 1024).toFixed(2) }} MB)          </span> -->
-
-          <!-- Message d'erreur -->
           <div *ngIf="companyForm.get('kbis')?.touched && companyForm.get('kbis')?.errors?.['required']"
                class="text-red-500 text-sm mt-1">
             Le fichier Kbis est requis
@@ -89,26 +87,34 @@
 
       <div *ngIf="!isCompany">
         <div class="mb-2">
-          <input type="text" formControlName="userName" name="userName" placeholder="Pseudo" required
+          <input type="text" formControlName="username" name="username" placeholder="Pseudo" required
                  class="w-full p-2 border border-gray-300 rounded-md h-12">
+          <div *ngIf="userForm.get('username')?.touched && userForm.controls.username.invalid" class="text-red-500">
+            {{getUsernameErrorMessage(userForm)}}
+          </div>
         </div>
         <div class="mb-2">
           <input type="email" formControlName="email" name="email" placeholder="Email" required
                  class="w-full p-2 border border-gray-300 rounded-md h-12">
-          <div *ngIf="userForm.controls.email.touched && userForm.controls.email.invalid" class="text-red-500">
-            {{ getEmailErrorMessage() }}
+          <div *ngIf="userForm.get('email')?.touched && userForm.controls.email.invalid" class="text-red-500">
+            {{ getEmailErrorMessage(userForm) }}
           </div>
         </div>
         <div class="mb-2">
           <input type="password" formControlName="password" name="password" placeholder="Mot de passe" required
                  class="w-full p-2 border border-gray-300 rounded-md h-12">
-          <div *ngIf="userForm.controls.password.touched && userForm.controls.password.invalid" class="text-red-500">
-            {{ getPasswordErrorMessage() }}
+          <div *ngIf="userForm.get('password')?.touched && userForm.controls.password.invalid" class="text-red-500">
+            {{ getPasswordErrorMessage(userForm) }}
           </div>
         </div>
         <div class="mb-2">
           <input type="password" formControlName="confirmPassword" name="confirm-password" placeholder="Confirmer Mot de passe" required
                  class="w-full p-2 border border-gray-300 rounded-md h-12">
+          <div *ngIf="userForm.errors?.['passwordMismatch']  && userForm.get('confirmPassword')?.touched" class="text-red-500">
+            Les mots de passe ne correspondent pas
+          </div>
+
+
         </div>
       </div>
       <app-button type="submit" [label]="isCompany ? 'Demander une inscription' : 'S\'inscrire'" class="w-full"></app-button>

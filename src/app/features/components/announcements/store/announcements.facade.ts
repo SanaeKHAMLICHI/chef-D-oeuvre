@@ -85,7 +85,6 @@ export class AnnouncementFacade {
 
     createAnnouncement(announcement: CreateOrUpdateAnnouncementDto, files: (File | null)[]): Observable<AnnouncementDto> {
       const validFiles: File[] = files.filter((file): file is File => file !== null);
-
       return this.announcementService.createAnnouncement(announcement , validFiles).pipe(
         tap((announcement) => {
           console.log('Announcement created:', announcement);

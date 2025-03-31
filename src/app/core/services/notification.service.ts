@@ -13,7 +13,7 @@ export interface Notification {
   providedIn: 'root'
 })
 export class NotificationService {
-  private notifications = new BehaviorSubject<Notification[]>([]);
+  notifications = new BehaviorSubject<Notification[]>([]);
   private notificationId = 0;
 
 

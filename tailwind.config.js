@@ -1,6 +1,7 @@
 // tailwind.config.js
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  mode: 'jit', // <- ici©
   content: [
     "./src/**/*.{html,ts}",
   ],

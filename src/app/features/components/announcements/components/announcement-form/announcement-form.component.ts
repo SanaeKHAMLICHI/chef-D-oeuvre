@@ -9,6 +9,7 @@ import {AnnouncementStore} from "../../store/announcements.store";
 import {AnnouncementFacade} from "../../store/announcements.facade";
 import { NotificationService } from '../../../../../core/services/notification.service';
 import {ErrorHandlerService} from "../../../../../core/services/error-handler.services";
+import {FormValidationService} from "../../../../../core/services/form-validation.service";
 
 interface ImagePreview {
   file: File | null;
@@ -32,6 +33,8 @@ interface ImagePreview {
 })
 export class AnnouncementFormComponent implements OnInit {
   router = inject(Router);
+  fb = inject(FormBuilder)
+  formValidationService = inject(FormValidationService);
   announcementStore = inject(AnnouncementStore);
   uploadForm: FormGroup;
   selectedImages: ImagePreview[] = [];
@@ -42,15 +45,14 @@ export class AnnouncementFormComponent implements OnInit {
   categories$: Signal<CategoryDto[]> = this.announcementStore.categories;
   announcementFacade = inject(AnnouncementFacade);
   announcement: AnnouncementDto | null = null;
-  private errorHandler = inject(ErrorHandlerService);
-  private notificationService = inject(NotificationService);
+  errorHandler = inject(ErrorHandlerService);
+  notificationService = inject(NotificationService);
   fileSizeErrorMessage: string = '';
 
-
-  constructor(private fb: FormBuilder) {
+  constructor() {
     this.uploadForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
-      description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(1000)]],
+      description: ['', [Validators.required, this.formValidationService.noScriptValidator(), Validators.minLength(10), Validators.maxLength(1000)]],
       category: ['', Validators.required],
       state: ['', Validators.required],
       color: ['', Validators.required],
@@ -66,12 +68,8 @@ export class AnnouncementFormComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Vérifier si l'annonce est passée via `Router`
     const navigation = this.router.getCurrentNavigation();
     this.announcement = navigation?.extras.state?.['announcement'] || history.state.announcement || null;
-
-    console.log("📌 Annonce récupérée :", this.announcement);
-
     if (this.announcement) {
       this.fillFormWithAnnouncement(this.announcement);
     }
@@ -79,7 +77,6 @@ export class AnnouncementFormComponent implements OnInit {
 
   onFileSelected(event: any): void {
     const files = event.target.files;
-
     if (files) {
       const remainingSlots = 10 - this.selectedImages.length;
       const filesToAdd = Array.from<File>(files).slice(0, remainingSlots);
@@ -96,11 +93,9 @@ export class AnnouncementFormComponent implements OnInit {
             preview: e.target.result
           });
         };
-
         reader.readAsDataURL(file);
       });
     }
-
     event.target.value = '';
   }
 
@@ -129,9 +124,6 @@ export class AnnouncementFormComponent implements OnInit {
       const existingFiles: string[] = this.selectedImages
         .filter(image => image.file === null)
         .map(image => image.preview.replace('http://localhost:9001/greenswap/', ''));
-
-      console.log('🟢 Nouveaux fichiers:', newFiles);
-      console.log('🟠 Fichiers existants:', existingFiles);
 
       if (this.announcement) {
         this.announcementFacade.updateAnnouncement(this.announcement.id, announcementData, newFiles, existingFiles)
@@ -170,7 +162,7 @@ export class AnnouncementFormComponent implements OnInit {
   getErrorMessage(controlName: string): string {
     const control = this.uploadForm.get(controlName);
     if (control?.errors) {
-      return this.errorHandler.getErrorMessage(controlName, control.errors);
+      return this.errorHandler.getErrorMessage(control.errors);
     }
     return '';
   }
@@ -178,18 +170,6 @@ export class AnnouncementFormComponent implements OnInit {
   isFieldInvalid(controlName: string): boolean {
     const control = this.uploadForm.get(controlName);
     return control ? control.invalid && (control.dirty || control.touched) : false;
-  }
-
-  get categoryControl() {
-    return this.uploadForm.get('category');
-  }
-
-  get isCategoryTouched(): boolean {
-    return this.categoryControl?.touched || false;
-  }
-
-  get isCategoryRequired(): boolean {
-    return this.categoryControl?.errors?.['required'] || false;
   }
 
   fillFormWithAnnouncement(announcement: AnnouncementDto) {

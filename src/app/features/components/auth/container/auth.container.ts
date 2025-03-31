@@ -12,4 +12,4 @@ import { RouterOutlet } from '@angular/router';
   `,
   styles: []
 })
-export class AuthContainer {}
+export class AuthContainer {} 

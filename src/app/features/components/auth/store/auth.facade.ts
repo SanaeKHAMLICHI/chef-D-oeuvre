@@ -1,10 +1,9 @@
 import { AuthService } from '../services/auth.service';
-import { LoginRequest, LoginResponse, CompanyRequestDto, CompanyRequestResponse, CompanyDetailsDto, NewPasswordDto } from '../models/auth.model';
+import { LoginRequest, LoginResponse, CompanyRequestDto, CompanyRequestResponse, CompanyDetailsDto, NewPasswordDto,User , RegisterRequest, ResetPasswordDto } from '../models/auth.model';
 import { AuthStore } from './auth.store';
-import { User } from '../models/auth.model';
 import { inject, Injectable} from '@angular/core';
 import { Observable, tap } from 'rxjs';
-import { RegisterRequest, ResetPasswordDto } from '../models/auth.model';
+import {Router} from "@angular/router";
 
 
 @Injectable({
@@ -13,6 +12,7 @@ import { RegisterRequest, ResetPasswordDto } from '../models/auth.model';
 export class AuthFacade {
   authStore = inject(AuthStore);
   authService = inject(AuthService);
+  router= inject(Router);
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
     return this.authService.login(credentials).pipe(
@@ -24,16 +24,15 @@ export class AuthFacade {
 
   register(credentials: RegisterRequest): Observable<User> {
     return this.authService.register(credentials).pipe(
-      tap((response) => {
-        console.log(response);
-
+      tap(() => {
+        this.router.navigateByUrl('/auth/login')
       }))
   }
 
   submitCompanyRequest(credentials: CompanyRequestDto): Observable<CompanyRequestResponse> {
     return this.authService.submitCompanyRequest(credentials).pipe(
-      tap((response) => {
-        console.log(response);
+      tap(() => {
+        this.router.navigateByUrl('/auth/login');
       }))
   }
 
